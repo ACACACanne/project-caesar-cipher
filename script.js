@@ -1,39 +1,83 @@
-let shift = 3; // Default shift value
-const encryptBtn = document.getElementById('encrypt-btn');
-const decryptBtn = document.getElementById('decrypt-btn');  
-const messageInput = document.getElementById('message');
-const shiftInput = document.getElementById('shift');
-const decryptShiftInput = document.getElementById('decrypt-shift');
-const encryptedMessageDisplay = document.getElementById('encrypted-message');
-const decryptedMessageDisplay = document.getElementById('decrypted-message');
-function caesarCipher(str, shift) {
-    return str.split('').map(char => {
-        const code = char.charCodeAt(0);
-        if (code >= 65 && code <= 90) { // Uppercase letters
-            return String.fromCharCode(((code - 65 + shift) % 26) + 65);
-        } else if (code >= 97 && code <= 122) { // Lowercase letters
-            return String.fromCharCode(((code - 97 + shift) % 26) + 97);
-        } else {
-            return char; // Non-alphabetic characters remain unchanged
-        }
+let shift = 3;
+let decryptShift = 3; // Default shift value
+let alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+// Function to encrypt the message  
+function caesarCipherEncrypt(message, shift) {
+     if (typeof shift !== 'number' || shift < 1 || shift > 25 || !Number.isInteger(shift)) {
+        throw new Error('Shift value must be a whole number between 1 and 25');
+     }
+     if (message.length === 0) {
+        throw new Error('Message cannot be empty');
+     }
+     if (!/^[A-Za-z\s.,!?]*$/.test(message)) {
+        throw new Error('Message contains invalid characters');
+     }
+     if (typeof message !== 'string') {
+        throw new Error('Message must be a string');
+     }
+    return message.toUpperCase().split('').map(char => {
+        let index = alphabet.indexOf(char);
+        if (index === -1) return char; // Non-alphabetic characters are not changed
+        return alphabet[(index + shift) % 26];
     }).join('');
 }
-encryptBtn.addEventListener('click', () => {
-    const message = messageInput.value;
-    shift = parseInt(shiftInput.value) || 3;
-    const encryptedMessage = caesarCipher(message, shift);
-    encryptedMessageDisplay.textContent = encryptedMessage;
-});
-decryptBtn.addEventListener('click', () => {
-    const encryptedMessage = encryptedMessageDisplay.textContent;
-    const decryptShift = parseInt(decryptShiftInput.value) || 3;
-    const decryptedMessage = caesarCipher(encryptedMessage, (26 - decryptShift) % 26);
-    decryptedMessageDisplay.textContent = decryptedMessage;
-});     
 
-function updateShiftValue() {
-    shift = parseInt(shiftInput.value) || 3;
-}           
-shiftInput.addEventListener('input', updateShiftValue); 
-updateShiftValue();
+// Function to decrypt the message
+function caesarCipherDecrypt(message, shift) {
+    if (typeof shift !== 'number' || shift < 1 || shift > 25 || !Number.isInteger(shift)) {
+        throw new Error('Shift value must be a whole number between 1 and 25');
+     }
+     if (message.length === 0) {
+        throw new Error('Message cannot be empty');
+     }
+     if (!/^[A-Za-z\s.,!?]*$/.test(message)) {
+        throw new Error('Message contains invalid characters');
+     }
+     if (typeof message !== 'string') {
+        throw new Error('Message must be a string');
+     }
+    return message.toUpperCase().split('').map(char => {
+        let index = alphabet.indexOf(char);
+        if (index === -1) return char; // Non-alphabetic characters are not changed
+        return alphabet[(index - shift + 26) % 26];
+    }).join('');
+}
+
+document.getElementById('shift').addEventListener('input', (e) => {
+    shift = parseInt(e.target.value);
+    document.getElementById('shift-value').textContent = shift;
+});
+
+document.getElementById('encrypt-btn').addEventListener('click', () => {
+    const message = document.getElementById('message').value;
+    try {
+        const encryptedMessage = caesarCipherEncrypt(message, shift);
+        document.getElementById('encrypted-message').textContent = encryptedMessage;
+    } catch (error) {
+        document.getElementById('error-message').textContent = error.message;
+    }
+});
+
+document.getElementById('decrypt-btn').addEventListener('click', () => {
+    const message = document.getElementById('decrypted-message-input').value;
+    try {
+        const decryptedMessage = caesarCipherDecrypt(message, shift);
+        document.getElementById('decrypted-message').textContent = decryptedMessage;
+    } catch (error) {
+        document.getElementById('error-message').textContent = error.message;
+    }
+}); 
+
+// Initial display of shift value
+document.getElementById('shift-value').textContent = shift;  
+document.getElementById('decrypted-shift').value = decryptShift;
+document.getElementById('shift').value = shift;     
+
+       
+
+
+
+
+
 
