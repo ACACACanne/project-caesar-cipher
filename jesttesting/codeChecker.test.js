@@ -1,56 +1,93 @@
-/*Checking for shift default value and functions existence*/
+const { caesarCipherEncrypt, caesarCipherDecrypt } = require('./codeChecker');
+
+// Test cases
+// Valid inputs
 test('Default shift value should be 3', () => {
-    const shift = 3; // Default shift value
-    expect(shift).toBe(3);
+  expect(() => caesarCipherEncrypt('HELLO', 3)).not.toThrow();
 });
 
-/*Try edge values (1 and 25)*/
-test('Shift value should be 1', () => {
-    const shift = 1; // Edge shift value
-    expect(shift).toBe(1);
-});
-test('Shift value should be 25', () => {
-    const shift = 25; // Edge shift value
-    expect(shift).toBe(25);
+// Edge cases
+test('Shift value should be 1 and 25', () => {
+  expect(() => caesarCipherEncrypt('HELLO', 1)).not.toThrow();
+  expect(() => caesarCipherEncrypt('HELLO', 25)).not.toThrow();
 });
 
-/*Try invalid values (0, 26, negative, non-numeric).*/
-test('Shift value should not be 0', () => {
-    const shift = 0; // Invalid shift value
-    expect(shift).not.toBe(0);
-});
-test('Shift value should not be 26', () => {
-    const shift = 26; // Invalid shift value
-    expect(shift).not.toBe(26);
-});
-test('Shift value should not be negative', () => {
-    const shift = -3; // Invalid shift value
-    expect(shift).not.toBeLessThan(0);
-});         
-test('Shift value should be a number', () => {
-    const shift = 'three'; // Invalid shift value
-    expect(typeof shift).toBe('number');
+// Invalid inputs
+test('Invalid shift values should throw errors', () => {
+  expect(() => caesarCipherEncrypt('HELLO', 0)).toThrow();
+  expect(() => caesarCipherEncrypt('HELLO', 26)).toThrow();
+  expect(() => caesarCipherEncrypt('HELLO', -3)).toThrow();
+  expect(() => caesarCipherEncrypt('HELLO', 'three')).toThrow();
 });
 
-/* Test with lowercase, uppercase, mixed case */
-test('Lowercase input should be handled correctly', () => {
-    const message = 'hello';
-    const shift = 3;
-    const expected = 'KHOOR';
-    const result = caesarCipherEncrypt(message, shift);
-    expect(result).toBe(expected);
+// Valid inputs
+test('Encrypt lowercase, uppercase, mixed case', () => {
+  expect(caesarCipherEncrypt('hello', 3)).toBe('KHOOR');
+  expect(caesarCipherEncrypt('HELLO', 3)).toBe('KHOOR');
+  expect(caesarCipherEncrypt('HeLLo', 3)).toBe('KHOOR');
 });
-test('Uppercase input should be handled correctly', () => {
-    const message = 'HELLO';
-    const shift = 3;
-    const expected = 'KHOOR';
-    const result = caesarCipherEncrypt(message, shift);
-    expect(result).toBe(expected);
-});         
-test('Mixed case input should be handled correctly', () => {
-    const message = 'HeLLo';
-    const shift = 3;
-    const expected = 'KHOOR';
-    const result = caesarCipherEncrypt(message, shift);
-    expect(result).toBe(expected);
+
+// Edge cases
+test('Decrypt message correctly', () => {
+  expect(caesarCipherDecrypt('KHOOR', 3)).toBe('HELLO');
+});
+
+// Invalid inputs
+test('Message with invalid characters should throw error', () => {
+  expect(() => caesarCipherEncrypt('hello@world', 3)).toThrow();
+});
+
+//Test for functions existence
+test('Functions should exist', () => {
+  expect(caesarCipherEncrypt).toBeDefined();
+  expect(caesarCipherDecrypt).toBeDefined();
+});
+
+//Check for lower, upper and mixed case
+test('Encrypt lowercase, uppercase, mixed case', () => {
+  expect(caesarCipherEncrypt('hello', 3)).toBe('KHOOR');
+  expect(caesarCipherEncrypt('HELLO', 3)).toBe('KHOOR');
+  expect(caesarCipherEncrypt('HeLLo', 3)).toBe('KHOOR');
+});
+
+//Check for punctuation and spaces
+test('Encrypt message with spaces and punctuation', () => {
+  expect(caesarCipherEncrypt('Hello, World!', 3)).toBe('KHOOR, ZRUOG!');
+});
+
+//Check for empty message
+test('Empty message should throw error', () => {
+  expect(() => caesarCipherEncrypt('', 3)).toThrow();
+});
+
+//Throws error for non-string message
+test('Non-string message should throw error', () => {
+  expect(() => caesarCipherEncrypt(12345, 3)).toThrow();
+});
+
+//Throws error for not invalid characters
+test('Message with invalid characters should throw error', () => {
+  expect(() => caesarCipherEncrypt('hello@world', 3)).toThrow();
+});
+
+//Checking for shift < 1
+test('Shift value less than 1 should throw error', () => {
+  expect(() => caesarCipherEncrypt('HELLO', 0)).toThrow();
+  expect(() => caesarCipherEncrypt('HELLO', -5)).toThrow();
+});
+
+//Checking for shift > 25
+test('Shift value greater than 25 should throw error', () => {
+  expect(() => caesarCipherEncrypt('HELLO', 26)).toThrow();
+  expect(() => caesarCipherEncrypt('HELLO', 30)).toThrow();
+});
+
+//Checking for non-integer shift
+test('Non-integer shift value should throw error', () => {
+  expect(() => caesarCipherEncrypt('HELLO', 3.5)).toThrow();
+  expect(() => caesarCipherEncrypt('HELLO', 'three')).toThrow();
+  expect(() => caesarCipherEncrypt('HELLO', null)).toThrow();
+  expect(() => caesarCipherEncrypt('HELLO', undefined)).toThrow();
+  expect(() => caesarCipherEncrypt('HELLO', {})).toThrow();
+  expect(() => caesarCipherEncrypt('HELLO', [])).toThrow();
 });
